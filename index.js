@@ -439,7 +439,7 @@ function createProblemRow(problem, isSolved, isHold) {
 
     const checkboxImage = document.createElement("div");
     checkboxImage.classList.add("custom-checkbox");
-    checkboxImage.style.backgroundImage = "url('check.png')";
+    checkboxImage.style.backgroundImage = "url('libs/check.png')";
     checkboxImage.style.backgroundSize = "contain";
     checkboxImage.style.width = "20px";
     checkboxImage.style.height = "20px";
