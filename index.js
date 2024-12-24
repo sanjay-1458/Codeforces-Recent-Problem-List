@@ -550,15 +550,13 @@ document.getElementById("find-button").addEventListener("click", function () {
   filterProblems_test(filterCriteria).then((result) => {
     console.log("Filtered Result:", result);
 
-    console.log("result.unsolvedProblems", result.unsolvedProblems_test);
-    console.log("result.unsolvedProblems", result.solvedProblems_test);
     const unsolved = result.unsolvedProblems_test || [];
     const solved = result.solvedProblems_test || [];
     const hold = result.holdProblems || [];
-    console.log("aaa", unsolved);
+    
     renderProblems(unsolved, solved, hold);
     localStorage.setItem("unsolvedProblems", JSON.stringify(unsolved));
-    console.log("aa",solved);
+    
     localStorage.setItem("solvedProblems", JSON.stringify(solved));
     localStorage.setItem("holdProblems", JSON.stringify(hold));
     // location.reload();
