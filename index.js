@@ -4,8 +4,8 @@ let filterCriteria = {
   selectedProblemIndex_test: "",
 };
 
-const API_KEY_test = "7ea6524aa86de7f094849a35d9e3bd53c2007988";
-const API_SECRET_test = "f0dfde1b020d864aa09e137c365f500aecebd61f";
+const API_KEY_test = "YourApiKey";
+const API_SECRET_test = "YourApiKey";
 
 const MAX_CONTESTS_test = 5;
 
