@@ -4,10 +4,10 @@ let filterCriteria = {
   selectedProblemIndex_test: "",
 };
 
-const API_KEY_test = "yourapi";
-const API_SECRET_test = "yourapi";
+const API_KEY_test = "7ea6524aa86de7f094849a35d9e3bd53c2007988";
+const API_SECRET_test = "f0dfde1b020d864aa09e137c365f500aecebd61f";
 
-const MAX_CONTESTS_test = 10;
+const MAX_CONTESTS_test = 5;
 
 const contestTypes_test = [
   "Div. 1",
@@ -49,6 +49,12 @@ async function getContests_test(contestType_test) {
 
     if (data_test.status === "OK") {
       return data_test.result.filter((contest_test) => {
+        // Check if contest is finished and of type CF
+        if (contest_test.phase !== "FINISHED" || contest_test.type !== "CF") {
+          return false;
+        }
+
+        // Handle different contest types
         const isDiv1_test =
           contestType_test === "Div. 1" &&
           contest_test.name.includes("Div. 1") &&
@@ -57,11 +63,51 @@ async function getContests_test(contestType_test) {
           contestType_test === "Div. 2" &&
           contest_test.name.includes("Div. 2") &&
           !contest_test.name.includes("Div. 1");
+        const isDiv3_test =
+          contestType_test === "Div. 3" && contest_test.name.includes("Div. 3");
+        const isDiv4_test =
+          contestType_test === "Div. 4" && contest_test.name.includes("Div. 4");
+        const isDiv1And2_test =
+          contestType_test === "Div. 1 + Div. 2" &&
+          contest_test.name.includes("Div. 1") &&
+          contest_test.name.includes("Div. 2");
+        const isEducational_test =
+          contestType_test === "Educational" &&
+          contest_test.name.includes("Educational");
+        const isCodeTON_test =
+          contestType_test === "CodeTON" &&
+          contest_test.name.includes("CodeTON");
+        const isGlobal_test =
+          contestType_test === "Global" && contest_test.name.includes("Global");
+        const isKotlin_test =
+          contestType_test === "Kotlin" && contest_test.name.includes("Kotlin");
+        const isVKCup_test =
+          contestType_test === "VK Cup" && contest_test.name.includes("VK Cup");
+        const isAprilFools_test =
+          contestType_test === "April Fools" &&
+          contest_test.name.includes("April Fools");
+        const isTeamContests_test =
+          contestType_test === "Team Contests" &&
+          contest_test.name.includes("Team");
+        const isICPCScoring_test =
+          contestType_test === "ICPC Scoring" &&
+          contest_test.name.includes("ICPC");
 
+        // Return true if the contest matches the selected type
         return (
-          contest_test.phase === "FINISHED" &&
-          contest_test.type === "CF" &&
-          (isDiv1_test || isDiv2_test)
+          isDiv1_test ||
+          isDiv2_test ||
+          isDiv3_test ||
+          isDiv4_test || // Allow for Div. 4
+          isDiv1And2_test ||
+          isEducational_test || // Educational is a separate condition
+          isCodeTON_test ||
+          isGlobal_test ||
+          isKotlin_test || // Kotlin is a separate condition
+          isVKCup_test ||
+          isAprilFools_test ||
+          isTeamContests_test ||
+          isICPCScoring_test
         );
       });
     } else {
@@ -553,10 +599,9 @@ document.getElementById("find-button").addEventListener("click", function () {
     const unsolved = result.unsolvedProblems_test || [];
     const solved = result.solvedProblems_test || [];
     const hold = result.holdProblems || [];
-    
+
     renderProblems(unsolved, solved, hold);
     localStorage.setItem("unsolvedProblems", JSON.stringify(unsolved));
-    
     localStorage.setItem("solvedProblems", JSON.stringify(solved));
     localStorage.setItem("holdProblems", JSON.stringify(hold));
     // location.reload();
