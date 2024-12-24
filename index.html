@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Codeforces Problem List</title>
+    <script src="libs/md5.min.js"></script>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <div class="todo-app">
+        <h2>Codeforces Problem List</h2>
+        <div class="controls">
+          <div class="filter-bar">
+            <select
+              id="problem-selector"
+              class="select-dropdown"
+              onchange="toggleProblemView()"
+            >
+              <option value="unsolved">Unsolved Problems</option>
+              <option value="solved">Solved Problems</option>
+              <option value="hold">Hold Problems</option>
+            </select>
+            <input
+              type="text"
+              id="input-box"
+              placeholder="Search problems..."
+              oninput="filterProblems()"
+            />
+          </div>
+          <div class="additional-filters">
+            <input type="text" id="cf-id-input" placeholder="Codeforces ID" />
+            <select id="contest-type-dropdown">
+              <option value="">Contest Type</option>
+              <option value="Div. 1">Div. 1</option>
+              <option value="Div. 2">Div. 2</option>
+              <option value="Div. 3">Div. 3</option>
+              <option value="Div. 4">Div. 4</option>
+              <option value="Div. 1 + Div. 2">Div. 1 + Div. 2</option>
+              <option value="Educational">Educational</option>
+              <option value="CodeTON">CodeTON</option>
+              <option value="Global">Global</option>
+              <option value="Kotlin">Kotlin</option>
+              <option value="VK Cup">VK Cup</option>
+              <option value="Long Rounds">Long Rounds</option>
+            </select>
+            <select id="problem-number-dropdown">
+              <option value="">Problem Number</option>
+              <option value="A">A</option>
+              <option value="B">B</option>
+              <option value="C">C</option>
+              <option value="D">D</option>
+              <option value="E">E</option>
+            </select>
+            <button id="find-button">Find</button>
+          </div>
+        </div>
+        <div class="problem-section" id="unsolved-section">
+          <h3>Unsolved Problems</h3>
+          <table id="unsolved-problems">
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>Name</th>
+                <th>Link</th>
+                <th>Contest</th>
+              </tr>
+            </thead>
+          </table>
+          <div class="table-wrapper">
+            <table>
+              <tbody id="unsolved-problem-list"></tbody>
+              <tr>
+                <td colspan="3" style="height: 100px"></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        <div class="problem-section" id="solved-section" style="display: none">
+          <h3>Solved Problems</h3>
+          <table id="solved-problems">
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>Problem</th>
+                <th>Link</th>
+                <th>Contest Name</th>
+              </tr>
+            </thead>
+          </table>
+          <div class="table-wrapper">
+            <table>
+              <tbody id="solved-problem-list"></tbody>
+              <tr>
+                <td colspan="3" style="height: 100px"></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        <div class="problem-section" id="hold-section" style="display: none">
+          <h3>Hold Problems</h3>
+          <table id="hold-problems">
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>Problem</th>
+                <th>Link</th>
+                <th>Contest Name</th>
+              </tr>
+            </thead>
+          </table>
+          <div class="table-wrapper">
+            <table>
+              <tbody id="hold-problem-list"></tbody>
+              <tr>
+                <td colspan="3" style="height: 100px"></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        <div
+          class="back-button-container"
+          id="back-button-container"
+          style="display: none"
+        >
+          <button id="back-button" onclick="goBackToUnsolved()">Back</button>
+        </div>
+      </div>
+    </div>
+    <script src="index.js"></script>
+  </body>
+</html>
