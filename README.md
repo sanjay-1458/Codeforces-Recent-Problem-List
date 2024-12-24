@@ -9,26 +9,6 @@ This is a simple webpage to help you manage Codeforces problems. It organizes pr
 - **Save Your Changes**: The webpage saves your changes locally, so your data won’t be lost even if you refresh the page.
 - **Reset Data**: If you want to start fresh, just enter your Codeforces ID and press the "Find" button.
 
----
-
-### Installation and Usage
-
-1. **Clone or Download the Project**  
-   Clone the repository or download the project files to your local machine.
-
-2. **Install Required Libraries**  
-   The project uses `md5.min.js` to hash sensitive data such as your Codeforces ID. To include this library:
-   - Download the file `md5.min.js` from a reliable source like [cdnjs](https://cdnjs.com/).
-   - Place it inside the `libs` folder of your project.
-   - The file is linked in the HTML using:  
-     ```html
-     <script src="libs/md5.min.js"></script>
-     ```
-   - This ensures the hashing function is available for securely handling IDs.
-
-3. **Run the Project**  
-   - Open the `index.html` file in any modern web browser to load the webpage.
-   - Enter your Codeforces ID, apply filters, and start exploring your problem list.
 
 ---
 
@@ -57,3 +37,31 @@ View hold problems and move them to unsolved if needed.
 View problems you’ve already solved. This list updates when you fetch new data.
 
 ![Solved Problems](https://github.com/user-attachments/assets/91efe0e9-69b6-41b5-b2b1-d666c74018d2)
+
+---
+
+### Installation and Usage
+
+1. **Clone or Download the Project**  
+   Clone the repository or download the project files to your local machine.
+
+2. **Install Required Libraries**  
+   The project uses `md5.min.js` to hash sensitive data such as your Codeforces ID. To include this library:
+   - Download the file `md5.min.js` from a reliable source like [cdnjs](https://cdnjs.com/).
+   - Place it inside the `libs` folder of your project.
+   - The file is linked in the HTML using:  
+     ```html
+     <script src="libs/md5.min.js"></script>
+     ```
+   - This ensures the hashing function is available for securely handling IDs.
+3. **Add Your API Key**
+The project uses the Codeforces API for fetching problem data.
+- Steps to configure:
+  - Get an API key and secret from Codeforces API settings.
+  - Add your API key and secret to the relevant section in the project code (e.g., a configuration file or directly in the script).
+This ensures secure and personalized access to the API.
+
+3. **Run the Project**  
+   - Open the `index.html` file in any modern web browser to load the webpage.
+   - Enter your Codeforces ID, apply filters, and start exploring your problem list.
+
