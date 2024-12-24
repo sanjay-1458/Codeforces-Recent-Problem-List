@@ -7,7 +7,7 @@ let filterCriteria = {
 const API_KEY_test = "yourapi";
 const API_SECRET_test = "yourapi";
 
-const MAX_CONTESTS_test = 50;
+const MAX_CONTESTS_test = 10;
 
 const contestTypes_test = [
   "Div. 1",
