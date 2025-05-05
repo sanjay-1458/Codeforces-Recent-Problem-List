@@ -1,611 +1,116 @@
-let filterCriteria = {
-  username_test: "",
-  contestType_test: "",
-  selectedProblemIndex_test: "",
-};
-
-const API_KEY_test = "YourApiKey";
-const API_SECRET_test = "YourApiKey";
-
-const MAX_CONTESTS_test = 5;
-
-const contestTypes_test = [
-  "Div. 1",
-  "Div. 2",
-  "Div. 3",
-  "Div. 4",
-  "Div. 1 + Div. 2",
-  "Educational",
-  "CodeTON",
-  "Global",
-  "Kotlin",
-  "VK Cup",
-  "Long Rounds",
-  "April Fools",
-  "Team Contests",
-  "ICPC Scoring",
-];
-
-function generateSignature_test(params_test) {
-  const queryString_test = new URLSearchParams(params_test).toString();
-  const toSign_test = API_SECRET_test + queryString_test + API_KEY_test;
-  return md5(toSign_test);
-}
-
-async function getContests_test(contestType_test) {
-  const url_test = "https://codeforces.com/api/contest.list";
-  const params_test = { key: API_KEY_test };
-
-  const signature_test = generateSignature_test(params_test);
-
-  try {
-    const response_test = await fetch(
-      `${url_test}?${new URLSearchParams({
-        ...params_test,
-        sig: signature_test,
-      })}`
-    );
-    const data_test = await response_test.json();
-
-    if (data_test.status === "OK") {
-      return data_test.result.filter((contest_test) => {
-        // Check if contest is finished and of type CF
-        if (contest_test.phase !== "FINISHED" || contest_test.type !== "CF") {
-          return false;
-        }
-
-        // Handle different contest types
-        const isDiv1_test =
-          contestType_test === "Div. 1" &&
-          contest_test.name.includes("Div. 1") &&
-          !contest_test.name.includes("Div. 2");
-        const isDiv2_test =
-          contestType_test === "Div. 2" &&
-          contest_test.name.includes("Div. 2") &&
-          !contest_test.name.includes("Div. 1");
-        const isDiv3_test =
-          contestType_test === "Div. 3" && contest_test.name.includes("Div. 3");
-        const isDiv4_test =
-          contestType_test === "Div. 4" && contest_test.name.includes("Div. 4");
-        const isDiv1And2_test =
-          contestType_test === "Div. 1 + Div. 2" &&
-          contest_test.name.includes("Div. 1") &&
-          contest_test.name.includes("Div. 2");
-        const isEducational_test =
-          contestType_test === "Educational" &&
-          contest_test.name.includes("Educational");
-        const isCodeTON_test =
-          contestType_test === "CodeTON" &&
-          contest_test.name.includes("CodeTON");
-        const isGlobal_test =
-          contestType_test === "Global" && contest_test.name.includes("Global");
-        const isKotlin_test =
-          contestType_test === "Kotlin" && contest_test.name.includes("Kotlin");
-        const isVKCup_test =
-          contestType_test === "VK Cup" && contest_test.name.includes("VK Cup");
-        const isAprilFools_test =
-          contestType_test === "April Fools" &&
-          contest_test.name.includes("April Fools");
-        const isTeamContests_test =
-          contestType_test === "Team Contests" &&
-          contest_test.name.includes("Team");
-        const isICPCScoring_test =
-          contestType_test === "ICPC Scoring" &&
-          contest_test.name.includes("ICPC");
-
-        // Return true if the contest matches the selected type
-        return (
-          isDiv1_test ||
-          isDiv2_test ||
-          isDiv3_test ||
-          isDiv4_test || // Allow for Div. 4
-          isDiv1And2_test ||
-          isEducational_test || // Educational is a separate condition
-          isCodeTON_test ||
-          isGlobal_test ||
-          isKotlin_test || // Kotlin is a separate condition
-          isVKCup_test ||
-          isAprilFools_test ||
-          isTeamContests_test ||
-          isICPCScoring_test
-        );
-      });
-    } else {
-      console.error("Error in API response:", data_test.comment);
-      return [];
-    }
-  } catch (error_test) {
-    console.error("Error fetching contest data:", error_test);
-    return [];
-  }
-}
-
-async function getProblemsFromContest_test(contestId_test) {
-  const url_test = "https://codeforces.com/api/contest.standings";
-  const params_test = {
-    contestId: contestId_test,
-    key: API_KEY_test,
-  };
-
-  const signature_test = generateSignature_test(params_test);
-
-  try {
-    const response_test = await fetch(
-      `${url_test}?${new URLSearchParams({
-        ...params_test,
-        sig: signature_test,
-      })}`
-    );
-    const data_test = await response_test.json();
-
-    if (data_test.status === "OK") {
-      return data_test.result.problems.map((problem_test) => ({
-        contestId: problem_test.contestId,
-        index: problem_test.index,
-        name: problem_test.name,
-      }));
-    } else {
-      console.error(
-        `Error fetching problems for contest ${contestId_test}:`,
-        data_test.comment
-      );
-      return [];
-    }
-  } catch (error_test) {
-    console.error(
-      `Error fetching problems for contest ${contestId_test}:`,
-      error_test
-    );
-    return [];
-  }
-}
-
-async function getSolvedProblems_test(username_test) {
-  const url_test = "https://codeforces.com/api/user.status";
-  const params_test = {
-    handle: username_test,
-    key: API_KEY_test,
-  };
-
-  const signature_test = generateSignature_test(params_test);
-
-  try {
-    const response_test = await fetch(
-      `${url_test}?${new URLSearchParams({
-        ...params_test,
-        sig: signature_test,
-      })}`
-    );
-    const data_test = await response_test.json();
-
-    if (data_test.status === "OK") {
-      const solvedProblems_test = new Set(
-        data_test.result
-          .filter((submission_test) => submission_test.verdict === "OK")
-          .map(
-            (submission_test) =>
-              `${submission_test.problem.contestId}/${submission_test.problem.index}`
-          )
-      );
-      console.log(
-        `Found ${solvedProblems_test.size} solved problems for user ${username_test}`
-      );
-      return solvedProblems_test;
-    } else {
-      console.error(
-        `Error fetching solved problems for user ${username_test}:`,
-        data_test.comment
-      );
-      return new Set();
-    }
-  } catch (error_test) {
-    console.error(
-      `Error fetching solved problems for user ${username_test}:`,
-      error_test
-    );
-    return new Set();
-  }
-}
-
-async function checkIfUserExists_test(username_test) {
-  const url_test = `https://codeforces.com/api/user.info?handles=${username_test}`;
-  try {
-    const response_test = await fetch(url_test);
-    const data_test = await response_test.json();
-    return data_test.status === "OK";
-  } catch (error_test) {
-    console.error(`Error checking if user exists: ${error_test}`);
-    return false;
-  }
-}
-
-async function filterProblems_test(filterCriteria_test) {
-  const { username_test, contestType_test, selectedProblemIndex_test } =
-    filterCriteria_test;
-
-  const userExists_test = await checkIfUserExists_test(username_test);
-  if (!userExists_test) {
-    console.log("The provided username does not exist. Please try again.");
-    return;
-  }
-
-  const solvedProblems_test = await getSolvedProblems_test(username_test);
-
-  const contests_test = await getContests_test(contestType_test);
-  if (contests_test.length === 0) {
-    console.log("No contests found for the selected type.");
-    return;
-  }
-
-  contests_test.sort(
-    (a_test, b_test) => b_test.startTimeSeconds - a_test.startTimeSeconds
-  );
-
-  const limitedContests_test = contests_test.slice(0, MAX_CONTESTS_test);
-  console.log(
-    `Found ${limitedContests_test.length} finished contests of type ${contestType_test}.`
-  );
-
-  const allProblems_test = [];
-  for (let contest_test of limitedContests_test) {
-    console.log(
-      `Fetching problems for contest: ${contest_test.name} (ID: ${contest_test.id})`
-    );
-    const problems_test = await getProblemsFromContest_test(contest_test.id);
-
-    if (problems_test.length === 0) {
-      console.log(`No problems found for contest ${contest_test.name}.`);
-      continue;
-    }
-
-    const filteredProblems_test = problems_test.filter(
-      (problem_test) => problem_test.index === selectedProblemIndex_test
-    );
-
-    allProblems_test.push(
-      ...filteredProblems_test.map((problem_test) => ({
-        contestName: contest_test.name,
-        problemName: problem_test.name,
-        problemLink: `https://codeforces.com/problemset/problem/${problem_test.contestId}/${problem_test.index}`,
-        contestId: contest_test.id,
-        index: problem_test.index,
-      }))
-    );
-  }
-
-  if (allProblems_test.length === 0) {
-    console.log(`No problems found for index ${selectedProblemIndex_test}.`);
-    return;
-  }
-
-  const filteredSolvedProblems_test = Array.from(solvedProblems_test)
-    .filter((problem_test) => {
-      const [contestId_test, index_test] = problem_test.split("/");
-      return (
-        limitedContests_test.some(
-          (contest_test) => contest_test.id === parseInt(contestId_test)
-        ) && index_test === selectedProblemIndex_test
-      );
-    })
-    .map((problem_test) => {
-      const [contestId_test, index_test] = problem_test.split("/");
-      return {
-        contestName: allProblems_test.find(
-          (p_test) =>
-            p_test.contestId === parseInt(contestId_test) &&
-            p_test.index === index_test
-        ).contestName,
-        problemName: allProblems_test.find(
-          (p_test) =>
-            p_test.contestId === parseInt(contestId_test) &&
-            p_test.index === index_test
-        ).problemName,
-        problemLink: allProblems_test.find(
-          (p_test) =>
-            p_test.contestId === parseInt(contestId_test) &&
-            p_test.index === index_test
-        ).problemLink,
-        contestId: parseInt(contestId_test),
-        index: index_test,
-      };
-    });
-
-  const filteredUnsolvedProblems_test = allProblems_test.filter(
-    (problem_test) =>
-      !filteredSolvedProblems_test.some(
-        (solved_test) =>
-          solved_test.contestId === problem_test.contestId &&
-          solved_test.index === problem_test.index
-      )
-  );
-
-  const finalResult_test = {
-    unsolvedProblems_test: filteredUnsolvedProblems_test,
-    solvedProblems_test: filteredSolvedProblems_test,
-  };
-
-  return finalResult_test;
-}
-
-const filterCriteria_test = {
-  username_test: "XwatermelonX",
-  contestType_test: "Div. 2",
-  selectedProblemIndex_test: "A",
-};
-
-function toggleProblemView() {
-  const selectedValue = document.getElementById("problem-selector").value;
-
-  document.getElementById("unsolved-section").style.display = "none";
-  document.getElementById("solved-section").style.display = "none";
-  document.getElementById("hold-section").style.display = "none";
-
-  if (selectedValue === "unsolved") {
-    document.getElementById("unsolved-section").style.display = "block";
-  } else if (selectedValue === "solved") {
-    document.getElementById("solved-section").style.display = "block";
-  } else if (selectedValue === "hold") {
-    document.getElementById("hold-section").style.display = "block";
-  }
-}
-
-async function loadProblems() {
-  try {
-    const savedSolved =
-      JSON.parse(localStorage.getItem("solvedProblems")) || [];
-    const savedUnsolved =
-      JSON.parse(localStorage.getItem("unsolvedProblems")) || [];
-    const savedHold = JSON.parse(localStorage.getItem("holdProblems")) || [];
-
-    console.log("Saved Solved Problems:", savedSolved);
-    console.log("Saved Unsolved Problems:", savedUnsolved);
-    console.log("Saved Hold Problems:", savedHold);
-
-    if (
-      savedSolved.length === 0 &&
-      savedUnsolved.length === 0 &&
-      savedHold.length === 0
-    ) {
-      const response = await fetch("FilteredProblemSet.json");
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      console.log("Fetched JSON Data:", data);
-
-      window.solvedProblems = data.solvedProblems || [];
-      window.unsolvedProblems = data.unsolvedProblems || [];
-      window.holdProblems = data.holdProblems || [];
-    } else {
-      window.solvedProblems = savedSolved;
-      window.unsolvedProblems = savedUnsolved;
-      window.holdProblems = savedHold;
-    }
-
-    renderProblems(
-      window.unsolvedProblems,
-      window.solvedProblems,
-      window.holdProblems
-    );
-    toggleProblemView();
-  } catch (error) {
-    console.error("Error loading problems:", error);
-  }
-}
-
-function renderProblems(unsolved, solved, hold) {
-  const unsolvedList = document.getElementById("unsolved-problem-list");
-  const solvedList = document.getElementById("solved-problem-list");
-  const holdList = document.getElementById("hold-problem-list");
-
-  unsolvedList.innerHTML = "";
-  solvedList.innerHTML = "";
-  holdList.innerHTML = "";
-
-  unsolved.forEach((problem) => {
-    const row = createProblemRow(problem, false, false);
-    unsolvedList.appendChild(row);
-  });
-
-  solved.forEach((problem) => {
-    const row = createProblemRow(problem, true, false);
-    solvedList.appendChild(row);
-  });
-
-  hold.forEach((problem) => {
-    const row = createProblemRow(problem, false, true);
-    holdList.appendChild(row);
-  });
-}
-
-function createProblemRow(problem, isSolved, isHold) {
-  const row = document.createElement("tr");
-
-  const statusCell = document.createElement("td");
-  const checkboxWrapper = document.createElement("div");
-  const checkbox = document.createElement("input");
-
-  checkbox.type = "checkbox";
-  checkbox.checked = isSolved;
-
-  if (isSolved) {
-    checkbox.disabled = true;
-
-    checkboxWrapper.classList.add("checkbox-wrapper");
-    checkbox.style.display = "none";
-
-    const checkboxImage = document.createElement("div");
-    checkboxImage.classList.add("custom-checkbox");
-    checkboxImage.style.backgroundImage = "url('libs/check.png')";
-    checkboxImage.style.backgroundSize = "contain";
-    checkboxImage.style.width = "20px";
-    checkboxImage.style.height = "20px";
-    checkboxImage.style.cursor = "not-allowed";
-
-    checkboxWrapper.appendChild(checkboxImage);
-    statusCell.appendChild(checkboxWrapper);
-  } else if (isHold) {
-    checkboxWrapper.appendChild(checkbox);
-    statusCell.appendChild(checkboxWrapper);
-
-    checkbox.addEventListener("change", () => {
-      if (checkbox.checked) {
-        moveProblemToUnsolved(problem);
-      }
-    });
+function renderList(list) {
+  const tbody = document.getElementById("problem-list");
+  tbody.innerHTML = "";
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="4">No problems found.</td></tr>';
   } else {
-    checkboxWrapper.appendChild(checkbox);
-    statusCell.appendChild(checkboxWrapper);
-
-    checkbox.addEventListener("change", () => {
-      if (checkbox.checked) {
-        moveProblemToHold(problem);
-      } else {
-        moveProblemToUnsolved(problem);
-      }
+    list.forEach((p, i) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+            <td>${i + 1}</td>
+            <td>${p.name}</td>
+            <td><a href="https://codeforces.com/contest/${
+              p.contestId
+            }/problem/${p.index}" target="_blank">View</a></td>
+            <td>${p.contestName}</td>
+          `;
+      tbody.appendChild(tr);
     });
   }
-
-  if (isSolved) {
-    row.classList.add("status-solved");
-  } else if (isHold) {
-    row.classList.add("status-hold");
-  } else {
-    row.classList.add("status-unsolved");
-  }
-
-  const nameCell = document.createElement("td");
-  nameCell.textContent = problem.problemName;
-
-  const linkCell = document.createElement("td");
-  const link = document.createElement("a");
-  link.href = problem.problemLink;
-  link.target = "_blank";
-  link.textContent = "Link";
-  linkCell.appendChild(link);
-
-  const contestCell = document.createElement("td");
-  contestCell.textContent = problem.contestName;
-
-  row.appendChild(statusCell);
-  row.appendChild(nameCell);
-  row.appendChild(linkCell);
-  row.appendChild(contestCell);
-
-  return row;
 }
 
-function moveProblemToHold(problem) {
-  window.unsolvedProblems = window.unsolvedProblems.filter(
-    (p) => p.problemName !== problem.problemName
-  );
-  window.holdProblems.push(problem);
-  renderProblems(
-    window.unsolvedProblems,
-    window.solvedProblems,
-    window.holdProblems
-  );
-  saveData();
-}
+document.getElementById("view-select").addEventListener("change", () => {
+  const view = document.getElementById("view-select").value;
+  document.getElementById("table-title").textContent =
+    view === "solved" ? "Solved Problems" : "Unsolved Problems";
 
-function moveProblemToUnsolved(problem) {
-  window.holdProblems = window.holdProblems.filter(
-    (p) => p.problemName !== problem.problemName
-  );
-  window.unsolvedProblems.push(problem);
-  renderProblems(
-    window.unsolvedProblems,
-    window.solvedProblems,
-    window.holdProblems
-  );
-  saveData();
-}
-
-function saveData() {
-  localStorage.setItem("solvedProblems", JSON.stringify(window.solvedProblems));
-  localStorage.setItem(
-    "unsolvedProblems",
-    JSON.stringify(window.unsolvedProblems)
-  );
-  localStorage.setItem("holdProblems", JSON.stringify(window.holdProblems));
-}
-
-function filterProblems() {
-  const query = document.getElementById("input-box").value.toLowerCase();
-
-  const filteredUnsolved = window.unsolvedProblems.filter(
-    (problem) =>
-      problem.problemName.toLowerCase().includes(query) ||
-      problem.contestName.toLowerCase().includes(query)
-  );
-
-  const filteredSolved = window.solvedProblems.filter(
-    (problem) =>
-      problem.problemName.toLowerCase().includes(query) ||
-      problem.contestName.toLowerCase().includes(query)
-  );
-
-  const filteredHold = window.holdProblems.filter(
-    (problem) =>
-      problem.problemName.toLowerCase().includes(query) ||
-      problem.contestName.toLowerCase().includes(query)
-  );
-
-  renderProblems(filteredUnsolved, filteredSolved, filteredHold);
-}
-
-document.getElementById("find-button").addEventListener("click", function () {
-  localStorage.removeItem("unsolvedProblems");
-  localStorage.removeItem("solvedProblems");
-  localStorage.removeItem("holdProblems");
-
-  const codeforcesId = document.getElementById("cf-id-input").value;
-  const contestType = document.getElementById("contest-type-dropdown").value;
-  const problemNumber = document.getElementById(
-    "problem-number-dropdown"
-  ).value;
-
-  filterCriteria.username_test = codeforcesId;
-  filterCriteria.contestType_test = contestType;
-  filterCriteria.selectedProblemIndex_test = problemNumber;
-  if (!codeforcesId || !contestType || !problemNumber) {
-    // If any value is empty, show an alert or message
-
-    // Optionally, you can highlight the empty fields to help the user
-    if (!codeforcesId) {
-      document.getElementById("cf-id-input").style.borderColor = "red"; // Highlight the input field in red
-    }
-    if (!contestType) {
-      document.getElementById("contest-type-dropdown").style.borderColor =
-        "red"; // Highlight the dropdown
-    }
-    if (!problemNumber) {
-      document.getElementById("problem-number-dropdown").style.borderColor =
-        "red"; // Highlight the dropdown
-    }
-
-    // Stop further execution by returning early
-    return;
-  }
-  console.log("Filter Criteria:", filterCriteria);
-  localStorage.setItem("filterCriteria", JSON.stringify(filterCriteria));
-
-  filterProblems_test(filterCriteria).then((result) => {
-    console.log("Filtered Result:", result);
-
-    const unsolved = result.unsolvedProblems_test || [];
-    const solved = result.solvedProblems_test || [];
-    const hold = result.holdProblems || [];
-
-    renderProblems(unsolved, solved, hold);
-    localStorage.setItem("unsolvedProblems", JSON.stringify(unsolved));
-    localStorage.setItem("solvedProblems", JSON.stringify(solved));
-    localStorage.setItem("holdProblems", JSON.stringify(hold));
-    // location.reload();
-  });
+  const key = view === "solved" ? "cfSolved" : "cfUnsolved";
+  const saved = localStorage.getItem(key);
+  renderList(saved ? JSON.parse(saved) : []);
 });
 
-loadProblems();
+document.getElementById("find-btn").addEventListener("click", async () => {
+  const cfId = document.getElementById("cf-id").value.trim();
+  let view = document.getElementById("view-select").value;
+  const contestType = document.getElementById("contest-type").value;
+  const problemLetter = document.getElementById("problem-letter").value;
+  const loadingEl = document.getElementById("loading");
+
+  if (!cfId) view = "unsolved";
+  document.getElementById("view-select").value = view;
+  document.getElementById("table-title").textContent =
+    view === "solved" ? "Solved Problems" : "Unsolved Problems";
+
+  loadingEl.style.display = "block";
+
+  try {
+    const solvedSet = new Set();
+    if (cfId) {
+      const res = await fetch(
+        `https://codeforces.com/api/user.status?handle=${cfId}`
+      );
+      const data = await res.json();
+      if (data.status === "OK") {
+        data.result.forEach((sub) => {
+          if (sub.verdict === "OK")
+            solvedSet.add(`${sub.problem.contestId}_${sub.problem.index}`);
+        });
+      }
+    }
+
+    const contestRes = await fetch("https://codeforces.com/api/contest.list");
+    const contestData = await contestRes.json();
+    const contestMap = {};
+    const recentIds = [];
+    if (contestData.status === "OK") {
+      contestData.result
+        .filter((c) => c.phase === "FINISHED")
+        .sort((a, b) => b.id - a.id)
+        .slice(0, 30)
+        .forEach((c) => {
+          recentIds.push(c.id);
+          contestMap[c.id] = c.name;
+        });
+    }
+
+    const probRes = await fetch(
+      "https://codeforces.com/api/problemset.problems"
+    );
+    const probData = await probRes.json();
+    const base =
+      probData.status === "OK"
+        ? probData.result.problems.filter(
+            (p) => recentIds.includes(p.contestId) && /^[A-Z]$/.test(p.index)
+          )
+        : [];
+
+    const solvedList = [];
+    const unsolvedList = [];
+    base.forEach((p) => {
+      const keyId = `${p.contestId}_${p.index}`;
+      const rec = { ...p, contestName: contestMap[p.contestId] };
+      const typeMatch = contestType
+        ? rec.contestName.includes(contestType)
+        : true;
+      const letterMatch = problemLetter ? rec.index === problemLetter : true;
+      if (!typeMatch || !letterMatch) return;
+      if (solvedSet.has(keyId)) solvedList.push(rec);
+      else unsolvedList.push(rec);
+    });
+
+    localStorage.setItem("cfSolved", JSON.stringify(solvedList));
+    localStorage.setItem("cfUnsolved", JSON.stringify(unsolvedList));
+
+    renderList(view === "solved" ? solvedList : unsolvedList);
+  } catch (e) {
+    console.error(e);
+    alert("Error fetching data");
+  } finally {
+    loadingEl.style.display = "none";
+  }
+});
+
+window.addEventListener("DOMContentLoaded", () => {
+  const saved = localStorage.getItem("cfUnsolved");
+  if (saved) renderList(JSON.parse(saved));
+});

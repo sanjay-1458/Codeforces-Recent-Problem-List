@@ -23,20 +23,7 @@ This is a simple webpage to help you manage Codeforces problems. It organizes pr
 
 ### Example Views:
 
-#### Hold Problems
-View unsolved problems and move them to Hold if needed.
-
-![Unsolved Problems](https://github.com/user-attachments/assets/15044f4c-2c60-4759-8dd5-5e9b7e5b5bb3)
-
-#### Hold Problems
-View hold problems and move them to unsolved if needed.
-
-![Hold Problems](https://github.com/user-attachments/assets/1aeae988-c5cc-41b3-ab60-259aebb9c888)
-
-#### Solved Problems
-View problems you’ve already solved. This list updates when you fetch new data.
-
-![Solved Problems](https://github.com/user-attachments/assets/91efe0e9-69b6-41b5-b2b1-d666c74018d2)
+![alt text](image.png)
 
 ---
 
