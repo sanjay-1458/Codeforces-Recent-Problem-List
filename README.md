@@ -19,14 +19,7 @@ This is a simple webpage to help you manage Codeforces problems. It organizes pr
 
 ---
 
-### Deployed Link
 
-https://codeforces-recent-problem-list.vercel.app/
-
-
-3. **Run the Project**  
-   - Open the `index.html` file in any modern web browser to load the webpage.
-   - Enter your Codeforces ID, apply filters, and start exploring your problem list.
      
-# Deployed Link
+## Deployed Link
 https://codeforces-recent-problem-list.vercel.app/
